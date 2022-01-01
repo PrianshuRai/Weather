@@ -1,8 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:weather/main.dart';
+import 'package:weather/position.dart';
 
 TextStyle getFont(TextStyle? values, BuildContext context,
     {color: Colors, size: Size}) {
@@ -124,17 +126,57 @@ class _LandingState extends State<Landing> {
             style: GoogleFonts.getFont('Lato',
                 textStyle: Theme.of(context).textTheme.headline1,
                 color: Colors.white.withOpacity(.7),
-                fontWeight: FontWeight.w700),
+                fontWeight: FontWeight.w800),
             children: [
-              const TextSpan(text: '\u2109'),
-              query["units"] == 'metrics'
-                  ? const TextSpan(text: 'C')
+              TextSpan(
+                text: '\u00B0',
+                style: GoogleFonts.getFont('Lato',
+                    textStyle: Theme.of(context).textTheme.headline1,
+                    color: Colors.white.withOpacity(.7),
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: 4
+                    // fontSize: 30,
+                    ),
+              ),
+              query["units"] == 'metric'
+                  ? TextSpan(
+                      text: 'C',
+                      style: GoogleFonts.getFont(
+                        'Lato',
+                        textStyle: Theme.of(context).textTheme.headline1,
+                        color: Colors.white.withOpacity(.7),
+                        fontWeight: FontWeight.w400,
+                      ),
+                    )
                   : query["units"] == "imperial"
-                      ? const TextSpan(text: "F")
-                      : const TextSpan(text: "K")
+                      ? TextSpan(
+                          text: "F",
+                          style: GoogleFonts.getFont(
+                            'Lato',
+                            textStyle: Theme.of(context).textTheme.headline1,
+                            color: Colors.white.withOpacity(.7),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        )
+                      : TextSpan(
+                          text: "K",
+                          style: GoogleFonts.getFont(
+                            'Lato',
+                            textStyle: Theme.of(context).textTheme.headline1,
+                            color: Colors.white.withOpacity(.7),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        )
             ],
           ),
         ),
+        ElevatedButton(
+            onPressed: () async {
+              Position position = await Geolocator.getCurrentPosition(
+                  desiredAccuracy: LocationAccuracy.high);
+              print(position);
+            },
+            child: Text('get position'))
       ],
     );
   }
