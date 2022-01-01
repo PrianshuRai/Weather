@@ -120,16 +120,20 @@ class _LandingState extends State<Landing> {
         ),
         RichText(
           text: TextSpan(
-              text: "22",
-              style: DefaultTextStyle.of(context).style,
-              children: [
-                const TextSpan(text: '\u2109'),
-                query["units"] == 'metrics'
-                    ? const TextSpan(text: 'C')
-                    : query["units"] == "imperial"
-                        ? const TextSpan(text: "F")
-                        : const TextSpan(text: "K")
-              ]),
+            text: "22",
+            style: GoogleFonts.getFont('Lato',
+                textStyle: Theme.of(context).textTheme.headline1,
+                color: Colors.white.withOpacity(.7),
+                fontWeight: FontWeight.w700),
+            children: [
+              const TextSpan(text: '\u2109'),
+              query["units"] == 'metrics'
+                  ? const TextSpan(text: 'C')
+                  : query["units"] == "imperial"
+                      ? const TextSpan(text: "F")
+                      : const TextSpan(text: "K")
+            ],
+          ),
         ),
       ],
     );
