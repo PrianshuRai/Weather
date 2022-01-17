@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -25,6 +26,80 @@ class Landing extends StatefulWidget {
 class _LandingState extends State<Landing> {
   TextEditingController searchField = TextEditingController();
   bool menuOpen = false;
+
+  // settings bottom sheet
+  Future<dynamic> showImageSource(BuildContext context) async {
+    if (menuOpen) {
+      return showModalBottomSheet(
+          barrierColor: Colors.black26.withOpacity(.3),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          context: context,
+          builder: (context) {
+            return Container(
+              height: 250.0,
+              color: Colors.transparent,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 7, sigmaY: 7),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      gradient: LinearGradient(
+                        colors: <Color>[
+                          Color(0xFFFFEBEE).withOpacity(0.6), //BBDEFB
+                          Color(0xFFE3F2FD).withOpacity(0.6) // FFCDD2
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.camera_alt_rounded,
+                              size: 60,
+                              color: Colors.white70,
+                              semanticLabel: "Take image from Camera",
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding:
+                              const EdgeInsets.only(top: 60.0, bottom: 60.0),
+                          child: VerticalDivider(
+                            thickness: 1.5,
+                            width: 1,
+                            color: Colors.black12,
+                          ),
+                        ),
+                        Container(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.crop_original,
+                              size: 60,
+                              color: Colors.white70,
+                              semanticLabel: "Choose image from Gallery",
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +142,7 @@ class _LandingState extends State<Landing> {
                               onPressed: () {
                                 setState(() {
                                   menuOpen = true;
+                                  // showImageSource(context);
                                 });
                               },
                             )
@@ -122,7 +198,7 @@ class _LandingState extends State<Landing> {
         ),
         RichText(
           text: TextSpan(
-            text: "22",
+            text: "23",
             style: GoogleFonts.getFont('Lato',
                 textStyle: Theme.of(context).textTheme.headline1,
                 color: Colors.white.withOpacity(.7),
