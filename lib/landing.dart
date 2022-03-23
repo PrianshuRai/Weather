@@ -1,20 +1,10 @@
-import 'dart:io';
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:weather/main.dart';
-import 'package:weather/position.dart';
-
-TextStyle getFont(TextStyle? values, BuildContext context,
-    {color: Colors, size: Size}) {
-  return GoogleFonts.getFont(
-    "Lato",
-    textStyle: Theme.of(context).textTheme.bodyText1,
-  );
-}
-//TODO functio for TextStyle
+import 'package:weather/methods.dart';
 
 class Landing extends StatefulWidget {
   const Landing({Key? key}) : super(key: key);
@@ -26,6 +16,7 @@ class Landing extends StatefulWidget {
 class _LandingState extends State<Landing> {
   TextEditingController searchField = TextEditingController();
   bool menuOpen = false;
+  bool _celcius = false;
 
   // settings bottom sheet
   Future<dynamic> showImageSource(BuildContext context) async {
@@ -44,60 +35,95 @@ class _LandingState extends State<Landing> {
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 7, sigmaY: 7),
                   child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(22),
-                      gradient: LinearGradient(
-                        colors: <Color>[
-                          Color(0xFFFFEBEE).withOpacity(0.6), //BBDEFB
-                          Color(0xFFE3F2FD).withOpacity(0.6) // FFCDD2
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(22),
+                        gradient: LinearGradient(
+                          colors: <Color>[
+                            const Color(0xFF263238).withOpacity(0.6), //BBDEFB
+                            const Color(0xFF263238).withOpacity(0.6) // FFCDD2
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.camera_alt_rounded,
-                              size: 60,
-                              color: Colors.white70,
-                              semanticLabel: "Take image from Camera",
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Settings',
+                                  style: GoogleFonts.getFont(
+                                    "Lato",
+                                    color: Colors.white70,
+                                    textStyle:
+                                        Theme.of(context).textTheme.headline2,
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.settings_rounded,
+                                  color: Colors.white70,
+                                  size: 26,
+                                )
+                              ],
                             ),
-                          ),
+                            SwitchListTile(
+                              title: Text(
+                                'Metrics',
+                                style: GoogleFonts.getFont(
+                                  "Lato",
+                                  color: Colors.white70,
+                                  fontSize: 24,
+                                  textStyle:
+                                      Theme.of(context).textTheme.bodyText1,
+                                ),
+                              ),
+                              secondary: const Icon(
+                                Icons.thermostat_rounded,
+                                color: Colors.white60,
+                                size: 26,
+                              ),
+                              subtitle: Text(
+                                'Switch on for values in Fahrenheit',
+                                style: GoogleFonts.getFont(
+                                  "Lato",
+                                  color: Colors.white54,
+                                  fontSize: 12,
+                                  textStyle:
+                                      Theme.of(context).textTheme.subtitle1,
+                                ),
+                              ),
+                              value: _celcius,
+                              onChanged: (bool value) {
+                                if (kDebugMode) {
+                                  print("switch value is $value");
+                                }
+                                setState(() {
+                                  _celcius = value;
+                                  print(value);
+                                });
+                                if (_celcius = false) {
+                                  query['units'] = 'Imperial';
+                                  print('unit value changed == $query');
+                                } else if (_celcius = true) {
+                                  query['units'] = 'metric';
+                                  print('unit value changed == $query');
+                                }
+                              },
+                            )
+                          ],
                         ),
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(top: 60.0, bottom: 60.0),
-                          child: VerticalDivider(
-                            thickness: 1.5,
-                            width: 1,
-                            color: Colors.black12,
-                          ),
-                        ),
-                        Container(
-                          alignment: Alignment.centerRight,
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.crop_original,
-                              size: 60,
-                              color: Colors.white70,
-                              semanticLabel: "Choose image from Gallery",
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+                      )),
                 ),
               ),
             );
-          });
+          }).whenComplete(() {
+        setState(() {
+          menuOpen = false;
+        });
+      });
     }
   }
 
@@ -142,8 +168,8 @@ class _LandingState extends State<Landing> {
                               onPressed: () {
                                 setState(() {
                                   menuOpen = true;
-                                  // showImageSource(context);
                                 });
+                                showImageSource(context);
                               },
                             )
                           : IconButton(
@@ -152,8 +178,11 @@ class _LandingState extends State<Landing> {
                               iconSize: 30,
                               onPressed: () {
                                 setState(() {
-                                  menuOpen = false;
+                                  menuOpen = !menuOpen;
                                 });
+                                if (menuOpen) {
+                                  Navigator.of(context).pop();
+                                }
                               },
                             ),
                       Expanded(
@@ -248,9 +277,7 @@ class _LandingState extends State<Landing> {
         ),
         ElevatedButton(
             onPressed: () async {
-              Position position = await Geolocator.getCurrentPosition(
-                  desiredAccuracy: LocationAccuracy.high);
-              print(position);
+              position(context);
             },
             child: Text('get position'))
       ],
