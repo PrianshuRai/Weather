@@ -38,6 +38,7 @@ dependencies:
   permission_handler: ^8.3.0
   geolocator: ^8.0.1
   google_fonts: ^2.1.0
+  shared_preferences: ^2.0.13
 
 dev_dependencies:
   flutter_test:

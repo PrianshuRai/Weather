@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:weather/main.dart';
 import 'package:weather/methods.dart';
+import 'package:weather/getData.dart';
 
 class Landing extends StatefulWidget {
   const Landing({Key? key}) : super(key: key);
@@ -17,6 +17,8 @@ class _LandingState extends State<Landing> {
   TextEditingController searchField = TextEditingController();
   bool menuOpen = false;
   bool _celcius = false;
+  WeatherAPI data = WeatherAPI();
+  GetLocation currentLocation = GetLocation();
 
   // settings bottom sheet
   Future<dynamic> showImageSource(BuildContext context) async {
@@ -69,48 +71,53 @@ class _LandingState extends State<Landing> {
                                 )
                               ],
                             ),
-                            SwitchListTile(
-                              title: Text(
-                                'Metrics',
-                                style: GoogleFonts.getFont(
-                                  "Lato",
-                                  color: Colors.white70,
-                                  fontSize: 24,
-                                  textStyle:
-                                      Theme.of(context).textTheme.bodyText1,
-                                ),
-                              ),
-                              secondary: const Icon(
-                                Icons.thermostat_rounded,
-                                color: Colors.white60,
-                                size: 26,
-                              ),
-                              subtitle: Text(
-                                'Switch on for values in Fahrenheit',
-                                style: GoogleFonts.getFont(
-                                  "Lato",
-                                  color: Colors.white54,
-                                  fontSize: 12,
-                                  textStyle:
-                                      Theme.of(context).textTheme.subtitle1,
-                                ),
-                              ),
-                              value: _celcius,
-                              onChanged: (bool value) {
-                                if (kDebugMode) {
-                                  print("switch value is $value");
-                                }
-                                setState(() {
-                                  _celcius = value;
-                                  print(value);
-                                });
-                                if (_celcius = false) {
-                                  query['units'] = 'Imperial';
-                                  print('unit value changed == $query');
-                                } else if (_celcius = true) {
-                                  query['units'] = 'metric';
-                                  print('unit value changed == $query');
-                                }
+                            StatefulBuilder(
+                              builder: (BuildContext context,
+                                  void Function(void Function()) setState) {
+                                return SwitchListTile(
+                                  title: Text(
+                                    'Metrics',
+                                    style: GoogleFonts.getFont(
+                                      "Lato",
+                                      color: Colors.white70,
+                                      fontSize: 24,
+                                      textStyle:
+                                          Theme.of(context).textTheme.bodyText1,
+                                    ),
+                                  ),
+                                  secondary: const Icon(
+                                    Icons.thermostat_rounded,
+                                    color: Colors.white60,
+                                    size: 26,
+                                  ),
+                                  subtitle: Text(
+                                    'Turn off for values in Fahrenheit',
+                                    style: GoogleFonts.getFont(
+                                      "Lato",
+                                      color: Colors.white54,
+                                      fontSize: 12,
+                                      textStyle:
+                                          Theme.of(context).textTheme.subtitle1,
+                                    ),
+                                  ),
+                                  value: _celcius,
+                                  onChanged: (isOff) {
+                                    if (kDebugMode) {
+                                      print("switch value is $isOff");
+                                    }
+                                    setState(() {
+                                      _celcius = isOff;
+                                      print("celcius $_celcius");
+                                    });
+                                    if (_celcius) {
+                                      query['units'] = "metric";
+                                      print(query);
+                                    } else {
+                                      query['units'] = "imperial";
+                                      print(query);
+                                    }
+                                  },
+                                );
                               },
                             )
                           ],
@@ -127,6 +134,11 @@ class _LandingState extends State<Landing> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    // data;
+  }
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -211,8 +223,10 @@ class _LandingState extends State<Landing> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8),
                         onPressed: () {
-                          query['q'] = searchField.text;
-                          callApi();
+                          // query['q'] = searchField.text;
+                          print("calling func");
+                          data.callApi(searchterm: searchField.text);
+                          print("done");
                         },
                       )
                     ],
@@ -277,9 +291,52 @@ class _LandingState extends State<Landing> {
         ),
         ElevatedButton(
             onPressed: () async {
-              position(context);
+              currentLocation.position(context);
             },
-            child: Text('get position'))
+            child: Text('get position')),
+        Spacer(
+          flex: 1,
+        ),
+        Container(
+          padding: const EdgeInsets.only(bottom: 20),
+          height: 350,
+          width: MediaQuery.of(context).size.width * .93,
+          color: Colors.transparent,
+          child: ClipRRect(
+            clipBehavior: Clip.antiAlias,
+            borderRadius: BorderRadius.circular(22),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  gradient: LinearGradient(
+                    colors: <Color>[
+                      Colors.black26.withOpacity(0.5),
+                      Colors.black26.withOpacity(0.5)
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Text("MISSING")
+                  // TODO: build stream for new data
+                // ListView.builder(
+                //   itemBuilder: (BuildContext context, int index) {
+                //     String key = userDetails.keys.elementAt(index);
+                //     return Card(
+                //       child: ListTile(
+                //         title: Text('$key'),
+                //         subtitle: Text(userDetails[key]),
+                //       ),
+                //     );
+                //   },
+                // ),
+              ),
+            ),
+          ),
+        )
       ],
     );
   }
