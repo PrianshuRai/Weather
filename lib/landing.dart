@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather/methods.dart';
 import 'package:weather/getData.dart';
 
@@ -19,9 +20,19 @@ class _LandingState extends State<Landing> {
   bool _celcius = false;
   WeatherAPI data = WeatherAPI();
   GetLocation currentLocation = GetLocation();
+  late dynamic weatherDetails;
+
+  Future<void>_getData() async{
+    await currentLocation.getCoordinates(context);
+    final prefs = await SharedPreferences.getInstance();
+    final String? latitude = prefs.getString("lat");
+    final String? longitude = prefs.getString("lon");
+    await data.callApi(latitude: latitude, longitude: longitude);
+    weatherDetails = WeatherData();
+  }
 
   // settings bottom sheet
-  Future<dynamic> showImageSource(BuildContext context) async {
+  Future<dynamic> settingsMenu(BuildContext context) async {
     if (menuOpen) {
       return showModalBottomSheet(
           barrierColor: Colors.black26.withOpacity(.3),
@@ -138,6 +149,7 @@ class _LandingState extends State<Landing> {
   void initState() {
     super.initState();
     // data;
+    _getData();
   }
   @override
   Widget build(BuildContext context) {
@@ -181,7 +193,7 @@ class _LandingState extends State<Landing> {
                                 setState(() {
                                   menuOpen = true;
                                 });
-                                showImageSource(context);
+                                settingsMenu(context);
                               },
                             )
                           : IconButton(
@@ -291,7 +303,8 @@ class _LandingState extends State<Landing> {
         ),
         ElevatedButton(
             onPressed: () async {
-              currentLocation.position(context);
+              // currentLocation.position(context);
+              currentLocation.getCoordinates(context);
             },
             child: Text('get position')),
         Spacer(

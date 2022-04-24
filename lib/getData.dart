@@ -10,19 +10,20 @@ final query = {
   "lat": null,
   "lon": null,
   "appid": apiKey,
-  "units": 'metric'// imperial for F and metric for Calcius
+  "units": 'metric' // imperial for F and metric for Calcius
 };
+// TODO: handle units checkbox properly
 
 class WeatherAPI {
   Future<dynamic> callApi(
-      {String? searchterm, double? longitude, double? latitude}) async {
+      {String? searchterm, String? longitude, String? latitude}) async {
     print("func started");
     // assigning the values in <Map> query
     query["q"] = searchterm;
-    if (longitude != null) {
-      query["lon"] = longitude as String;
-      query["lat"] = latitude as String;
-    }
+    // if (longitude != null) {
+    query["lon"] = longitude;
+    query["lat"] = latitude;
+    // }
     print("query *** $query");
 
     // connect to the openweathermap URL
