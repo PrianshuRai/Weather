@@ -22,13 +22,14 @@ class _LandingState extends State<Landing> {
   GetLocation currentLocation = GetLocation();
   late dynamic weatherDetails;
 
-  Future<void>_getData() async{
+  Future<dynamic>_getData() async{
     await currentLocation.getCoordinates(context);
     final prefs = await SharedPreferences.getInstance();
     final String? latitude = prefs.getString("lat");
     final String? longitude = prefs.getString("lon");
     await data.callApi(latitude: latitude, longitude: longitude);
-    weatherDetails = WeatherData();
+    // weatherDetails = WeatherData();
+    // return weatherDetails;
   }
 
   // settings bottom sheet

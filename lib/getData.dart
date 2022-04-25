@@ -39,46 +39,48 @@ class WeatherAPI {
     } else {
       if (kDebugMode) {
         print(
-            'something is wrong code===${request.statusCode} \nbody=== ${request.body}');
+            'something is wrong code===${request.statusCode} \nbody=== ${request
+                .body}');
       }
-      return null;
+      throw Exception("Failed to load data to the class");
     }
   }
 }
 
 class WeatherData {
-  late double? feels_like;
-  late String? place;
-  late String? description;
-  late double? max;
-  late double? min;
-  late int? pressure;
-  late int? humidity;
-  late int? visibility;
-  late double? windSpeed;
-  late int? windDirection;
+  final double feels_like;
+  final String place;
+  final String description;
+  final double max;
+  final double min;
+  final int pressure;
+  final int humidity;
+  final int visibility;
+  final double windSpeed;
+  final int windDirection;
 
-  WeatherData(
-      {this.feels_like,
-      this.place,
-      this.description,
-      this.max,
-      this.min,
-      this.pressure,
-      this.humidity,
-      this.visibility,
-      this.windSpeed,
-      this.windDirection});
+  const WeatherData({
+    required this.feels_like,
+    required this.place,
+    required this.description,
+    required this.max,
+    required this.min,
+    required this.pressure,
+    required this.humidity,
+    required this.visibility,
+    required this.windSpeed,
+    required this.windDirection});
 
-  WeatherData.fromJson(Map<String, dynamic> json) {
-    feels_like = json['main']['temp_min'];
-    description = json['weather'][0]['description'];
-    max = json['main']['temp_max'];
-    min = json['main']['temp_min'];
-    pressure = json['main']['pressure'];
-    humidity = json['main']['humidity'];
-    visibility = json['visibility'];
-    windSpeed = json['wind']['speed'];
-    windDirection = json['wind']['deg'];
-  }
+  factory WeatherData.fromJson(Map<String, dynamic> json) => WeatherData(
+        feels_like : json['main']['temp_min'],
+        place: json['name'],
+        description : json['weather'][0]['description'],
+        max : json['main']['temp_max'],
+        min : json['main']['temp_min'],
+        pressure : json['main']['pressure'],
+        humidity : json['main']['humidity'],
+        visibility : json['visibility'],
+        windSpeed : json['wind']['speed'],
+        windDirection : json['wind']['deg']);
+
 }

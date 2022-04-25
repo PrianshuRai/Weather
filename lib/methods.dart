@@ -68,15 +68,22 @@ class GetLocation {
     LocationPermission permissions;
     Position currentPosition;
 
-    await Geolocator.requestPermission();
+   try {
+      await Geolocator.requestPermission();
 
-    permissions = await Geolocator.checkPermission();
-    if (permissions == LocationPermission.denied) {
-      permissions = await Geolocator.requestPermission();
+      permissions = await Geolocator.checkPermission();
       if (permissions == LocationPermission.denied) {
+        permissions = await Geolocator.requestPermission();
+        if (permissions == LocationPermission.denied) {
+          return;
+        }
+      }
+
+      if (permissions == LocationPermission.deniedForever) {
         return ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text("Permission is denied"),
+            content: const Text(
+                "Permission is permanently denied, Enable from settings"),
             action: SnackBarAction(
                 label: "Enable",
                 onPressed: () async {
@@ -86,34 +93,14 @@ class GetLocation {
             duration: const Duration(seconds: 1),
           ),
         );
-        ;
       }
-    }
 
-    if (permissions == LocationPermission.deniedForever) {
-      return ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-              "Permission is permanently denied, Enable from settings"),
-          action: SnackBarAction(
-              label: "Enable",
-              onPressed: () async {
-                await Geolocator.openLocationSettings();
-              }),
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 1),
-        ),
-      );
-      ;
-    }
-
-    // if (permissions == LocationPermission.always || permissions == LocationPermission.) {
-    currentPosition = await Geolocator.getCurrentPosition();
-    var latitude = currentPosition.latitude.toString();
-    var longitude = currentPosition.longitude.toString();
-    // }
-    print("the coordinates are $latitude and $longitude");
-    try {
+      // if (permissions == LocationPermission.always || permissions == LocationPermission.) {
+      currentPosition = await Geolocator.getCurrentPosition();
+      var latitude = currentPosition.latitude.toString();
+      var longitude = currentPosition.longitude.toString();
+      // }
+      print("the coordinates are $latitude and $longitude");
       // Obtain shared preferences.
       final prefs = await SharedPreferences.getInstance();
       // saving coordinates
@@ -123,9 +110,20 @@ class GetLocation {
       print("type: ${latitude.runtimeType}");
       print("get pref data : ${await prefs.getString("lat")}");
       return;
-    } catch (e) {
-      print("Error: $e");
-    }
+    } catch (e){
+     ScaffoldMessenger.of(context).showSnackBar(
+       SnackBar(
+         content: Text("Error occured: ${e.toString()}"),
+         action: SnackBarAction(
+             label: "➡️",
+             onPressed: () async {
+               await Geolocator.openLocationSettings();
+             }),
+         behavior: SnackBarBehavior.floating,
+         duration: const Duration(seconds: 3),
+       ),
+     );
+   }
   }
 }
 
