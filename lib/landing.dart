@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:weather/methods.dart';
 import 'package:weather/getData.dart';
+import 'package:weather/methods.dart';
 
 class Landing extends StatefulWidget {
   const Landing({Key? key}) : super(key: key);
@@ -15,19 +15,20 @@ class Landing extends StatefulWidget {
 }
 
 class _LandingState extends State<Landing> {
-  TextEditingController searchField = TextEditingController();
   bool menuOpen = false;
   bool _celcius = false;
   WeatherAPI data = WeatherAPI();
   GetLocation currentLocation = GetLocation();
   late dynamic weatherDetails;
+  late Future<WeatherData> report;
+  TextEditingController searchField = TextEditingController();
 
-  Future<dynamic>_getData() async{
+  Future<WeatherData> _getData() async {
     await currentLocation.getCoordinates(context);
     final prefs = await SharedPreferences.getInstance();
     final String? latitude = prefs.getString("lat");
     final String? longitude = prefs.getString("lon");
-    await data.callApi(latitude: latitude, longitude: longitude);
+    return await data.callApi(latitude: latitude, longitude: longitude);
     // weatherDetails = WeatherData();
     // return weatherDetails;
   }
@@ -149,9 +150,15 @@ class _LandingState extends State<Landing> {
   @override
   void initState() {
     super.initState();
-    // data;
-    _getData();
+    // get data from longitude and longitude on first startup
+    // if the searchterm is not available, run this
+    if (searchField.text.isEmpty) {
+      report = _getData();
+    } else {
+      report = data.callApi(searchterm: searchField.text);
+    }
   }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -322,32 +329,32 @@ class _LandingState extends State<Landing> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
               child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  gradient: LinearGradient(
-                    colors: <Color>[
-                      Colors.black26.withOpacity(0.5),
-                      Colors.black26.withOpacity(0.5)
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    gradient: LinearGradient(
+                      colors: <Color>[
+                        Colors.black26.withOpacity(0.5),
+                        Colors.black26.withOpacity(0.5)
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                   ),
-                ),
-                child: Text("MISSING")
+                  child: Text("MISSING")
                   // TODO: build stream for new data
-                // ListView.builder(
-                //   itemBuilder: (BuildContext context, int index) {
-                //     String key = userDetails.keys.elementAt(index);
-                //     return Card(
-                //       child: ListTile(
-                //         title: Text('$key'),
-                //         subtitle: Text(userDetails[key]),
-                //       ),
-                //     );
-                //   },
-                // ),
-              ),
+                  // ListView.builder(
+                  //   itemBuilder: (BuildContext context, int index) {
+                  //     String key = userDetails.keys.elementAt(index);
+                  //     return Card(
+                  //       child: ListTile(
+                  //         title: Text('$key'),
+                  //         subtitle: Text(userDetails[key]),
+                  //       ),
+                  //     );
+                  //   },
+                  // ),
+                  ),
             ),
           ),
         )

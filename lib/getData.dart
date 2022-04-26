@@ -15,7 +15,7 @@ final query = {
 // TODO: handle units checkbox properly
 
 class WeatherAPI {
-  Future<dynamic> callApi(
+  Future<WeatherData> callApi(
       {String? searchterm, String? longitude, String? latitude}) async {
     print("func started");
     // assigning the values in <Map> query
@@ -39,8 +39,7 @@ class WeatherAPI {
     } else {
       if (kDebugMode) {
         print(
-            'something is wrong code===${request.statusCode} \nbody=== ${request
-                .body}');
+            'something is wrong code===${request.statusCode} \nbody=== ${request.body}');
       }
       throw Exception("Failed to load data to the class");
     }
@@ -50,7 +49,9 @@ class WeatherAPI {
 class WeatherData {
   final double feels_like;
   final String place;
+  final String main;
   final String description;
+  final String icon;
   final double max;
   final double min;
   final int pressure;
@@ -59,28 +60,31 @@ class WeatherData {
   final double windSpeed;
   final int windDirection;
 
-  const WeatherData({
-    required this.feels_like,
-    required this.place,
-    required this.description,
-    required this.max,
-    required this.min,
-    required this.pressure,
-    required this.humidity,
-    required this.visibility,
-    required this.windSpeed,
-    required this.windDirection});
+  const WeatherData(
+      {required this.feels_like,
+      required this.place,
+      required this.main,
+      required this.description,
+      required this.icon,
+      required this.max,
+      required this.min,
+      required this.pressure,
+      required this.humidity,
+      required this.visibility,
+      required this.windSpeed,
+      required this.windDirection});
 
   factory WeatherData.fromJson(Map<String, dynamic> json) => WeatherData(
-        feels_like : json['main']['temp_min'],
-        place: json['name'],
-        description : json['weather'][0]['description'],
-        max : json['main']['temp_max'],
-        min : json['main']['temp_min'],
-        pressure : json['main']['pressure'],
-        humidity : json['main']['humidity'],
-        visibility : json['visibility'],
-        windSpeed : json['wind']['speed'],
-        windDirection : json['wind']['deg']);
-
+      feels_like: json['main']['temp_min'],
+      place: json['name'],
+      main: json['weather'][0]['main'],
+      description: json['weather'][0]['description'],
+      icon: json['weather'][0]['icon'],
+      max: json['main']['temp_max'],
+      min: json['main']['temp_min'],
+      pressure: json['main']['pressure'],
+      humidity: json['main']['humidity'],
+      visibility: json['visibility'],
+      windSpeed: json['wind']['speed'],
+      windDirection: json['wind']['deg']);
 }
