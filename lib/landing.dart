@@ -28,7 +28,7 @@ class _LandingState extends State<Landing> {
     final prefs = await SharedPreferences.getInstance();
     final String? latitude = prefs.getString("lat");
     final String? longitude = prefs.getString("lon");
-    return await data.callApi(latitude: latitude, longitude: longitude);
+    return await data.callApi(context, latitude: latitude, longitude: longitude);
     // weatherDetails = WeatherData();
     // return weatherDetails;
   }
@@ -114,12 +114,12 @@ class _LandingState extends State<Landing> {
                                     ),
                                   ),
                                   value: _celcius,
-                                  onChanged: (isOff) {
+                                  onChanged: (isOn) {
                                     if (kDebugMode) {
-                                      print("switch value is $isOff");
+                                      print("switch value is $isOn");
                                     }
                                     setState(() {
-                                      _celcius = isOff;
+                                      _celcius = isOn;
                                       print("celcius $_celcius");
                                     });
                                     if (_celcius) {
@@ -155,7 +155,9 @@ class _LandingState extends State<Landing> {
     if (searchField.text.isEmpty) {
       report = _getData();
     } else {
-      report = data.callApi(searchterm: searchField.text);
+      setState(() {
+        report = data.callApi(context, searchterm: searchField.text);
+      });
     }
   }
 
@@ -245,7 +247,11 @@ class _LandingState extends State<Landing> {
                         onPressed: () {
                           // query['q'] = searchField.text;
                           print("calling func");
-                          data.callApi(searchterm: searchField.text);
+                            // data.callApi(searchterm: searchField.text);
+                          setState(() {
+                            data.callApi(context, searchterm: searchField.text);
+                          });  
+                          report;
                           print("done");
                         },
                       )
@@ -259,105 +265,149 @@ class _LandingState extends State<Landing> {
         const SizedBox(
           height: 10,
         ),
-        RichText(
-          text: TextSpan(
-            text: "23",
-            style: GoogleFonts.getFont('Lato',
-                textStyle: Theme.of(context).textTheme.headline1,
-                color: Colors.white.withOpacity(.7),
-                fontWeight: FontWeight.w800),
-            children: [
-              TextSpan(
-                text: '\u00B0',
-                style: GoogleFonts.getFont('Lato',
-                    textStyle: Theme.of(context).textTheme.headline1,
-                    color: Colors.white.withOpacity(.7),
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: 4
-                    // fontSize: 30,
-                    ),
-              ),
-              query["units"] == 'metric'
-                  ? TextSpan(
-                      text: 'C',
-                      style: GoogleFonts.getFont(
-                        'Lato',
-                        textStyle: Theme.of(context).textTheme.headline1,
-                        color: Colors.white.withOpacity(.7),
-                        fontWeight: FontWeight.w400,
+        FutureBuilder<WeatherData>(
+            future: report,
+            builder: (context, theData) {
+              if (theData.hasData) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    RichText(
+                      text: TextSpan(
+                        text: "${theData.data?.feels_like.round()}",
+                        style: GoogleFonts.getFont('Lato',
+                            textStyle: Theme.of(context).textTheme.headline1,
+                            color: Colors.white.withOpacity(.7),
+                            fontWeight: FontWeight.w800),
+                        children: [
+                          TextSpan(
+                            text: '\u00B0',
+                            style: GoogleFonts.getFont('Lato',
+                                textStyle:
+                                    Theme.of(context).textTheme.headline1,
+                                color: Colors.white.withOpacity(.7),
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: 4
+                                // fontSize: 30,
+                                ),
+                          ),
+                          query["units"] == 'metric'
+                              ? TextSpan(
+                                  text: 'C',
+                                  style: GoogleFonts.getFont(
+                                    'Lato',
+                                    textStyle:
+                                        Theme.of(context).textTheme.headline1,
+                                    color: Colors.white.withOpacity(.7),
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                )
+                              : query["units"] == "imperial"
+                                  ? TextSpan(
+                                      text: "F",
+                                      style: GoogleFonts.getFont(
+                                        'Lato',
+                                        textStyle: Theme.of(context)
+                                            .textTheme
+                                            .headline1,
+                                        color: Colors.white.withOpacity(.7),
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    )
+                                  : TextSpan(
+                                      text: "K",
+                                      style: GoogleFonts.getFont(
+                                        'Lato',
+                                        textStyle: Theme.of(context)
+                                            .textTheme
+                                            .headline1,
+                                        color: Colors.white.withOpacity(.7),
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    )
+                        ],
                       ),
-                    )
-                  : query["units"] == "imperial"
-                      ? TextSpan(
-                          text: "F",
-                          style: GoogleFonts.getFont(
-                            'Lato',
-                            textStyle: Theme.of(context).textTheme.headline1,
-                            color: Colors.white.withOpacity(.7),
-                            fontWeight: FontWeight.w400,
+                    ),
+                  ],
+                );
+              } else if (theData.hasError) {
+                return Center(
+                    child: Container(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  height: 350,
+                  width: MediaQuery.of(context).size.width * .93,
+                  color: Colors.transparent,
+                  child: ClipRRect(
+                    clipBehavior: Clip.antiAlias,
+                    borderRadius: BorderRadius.circular(22),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                      child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            gradient: LinearGradient(
+                              colors: <Color>[
+                                Colors.black26.withOpacity(0.5),
+                                Colors.black26.withOpacity(0.5)
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
                           ),
-                        )
-                      : TextSpan(
-                          text: "K",
-                          style: GoogleFonts.getFont(
-                            'Lato',
-                            textStyle: Theme.of(context).textTheme.headline1,
-                            color: Colors.white.withOpacity(.7),
-                            fontWeight: FontWeight.w400,
-                          ),
-                        )
-            ],
-          ),
-        ),
-        ElevatedButton(
-            onPressed: () async {
-              // currentLocation.position(context);
-              currentLocation.getCoordinates(context);
-            },
-            child: Text('get position')),
-        Spacer(
-          flex: 1,
-        ),
-        Container(
-          padding: const EdgeInsets.only(bottom: 20),
-          height: 350,
-          width: MediaQuery.of(context).size.width * .93,
-          color: Colors.transparent,
-          child: ClipRRect(
-            clipBehavior: Clip.antiAlias,
-            borderRadius: BorderRadius.circular(22),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-              child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    gradient: LinearGradient(
-                      colors: <Color>[
-                        Colors.black26.withOpacity(0.5),
-                        Colors.black26.withOpacity(0.5)
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+                          child: Text(
+                              "Error while starting the app \n${theData.error}",
+                            style:GoogleFonts.getFont(
+                              'Lato',
+                              textStyle: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium,
+                              color: Colors.white.withOpacity(.7),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          )),
                     ),
                   ),
-                  child: Text("MISSING")
-                  // TODO: build stream for new data
-                  // ListView.builder(
-                  //   itemBuilder: (BuildContext context, int index) {
-                  //     String key = userDetails.keys.elementAt(index);
-                  //     return Card(
-                  //       child: ListTile(
-                  //         title: Text('$key'),
-                  //         subtitle: Text(userDetails[key]),
-                  //       ),
-                  //     );
-                  //   },
-                  // ),
+                ));
+              } else {
+                return Center(
+                    child: Container(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  height: 200,
+                  width: MediaQuery.of(context).size.width * .93,
+                  color: Colors.transparent,
+                  child: ClipRRect(
+                    clipBehavior: Clip.antiAlias,
+                    borderRadius: BorderRadius.circular(22),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                      child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            gradient: LinearGradient(
+                              colors: <Color>[
+                                Colors.black26.withOpacity(0.5),
+                                Colors.black26.withOpacity(0.5)
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                          child: Center(
+                            child: CircularProgressIndicator.adaptive(
+                              backgroundColor: Colors.black12,
+                              strokeWidth: 7.3,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.blue.shade100),
+                            ),
+                          )),
+                    ),
                   ),
-            ),
-          ),
-        )
+                ));
+              }
+            })
       ],
     );
   }

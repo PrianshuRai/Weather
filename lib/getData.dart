@@ -15,7 +15,7 @@ final query = {
 // TODO: handle units checkbox properly
 
 class WeatherAPI {
-  Future<WeatherData> callApi(
+  Future<WeatherData> callApi(context,
       {String? searchterm, String? longitude, String? latitude}) async {
     print("func started");
     // assigning the values in <Map> query
