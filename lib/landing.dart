@@ -1,9 +1,9 @@
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:weather/customWidgets.dart';
 import 'package:weather/getData.dart';
 import 'package:weather/methods.dart';
 
@@ -16,7 +16,7 @@ class Landing extends StatefulWidget {
 
 class _LandingState extends State<Landing> {
   bool menuOpen = false;
-  bool _celcius = false;
+  // bool _celcius = false;
   WeatherAPI data = WeatherAPI();
   GetLocation currentLocation = GetLocation();
   late dynamic weatherDetails;
@@ -28,7 +28,8 @@ class _LandingState extends State<Landing> {
     final prefs = await SharedPreferences.getInstance();
     final String? latitude = prefs.getString("lat");
     final String? longitude = prefs.getString("lon");
-    return await data.callApi(context, latitude: latitude, longitude: longitude);
+    return await data.callApi(context,
+        latitude: latitude, longitude: longitude);
     // weatherDetails = WeatherData();
     // return weatherDetails;
   }
@@ -67,11 +68,10 @@ class _LandingState extends State<Landing> {
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
+                              children: <Widget>[
                                 Text(
                                   'Settings',
-                                  style: GoogleFonts.getFont(
-                                    "Lato",
+                                  style: GoogleFonts.lato(
                                     color: Colors.white70,
                                     textStyle:
                                         Theme.of(context).textTheme.headline2,
@@ -84,55 +84,8 @@ class _LandingState extends State<Landing> {
                                 )
                               ],
                             ),
-                            StatefulBuilder(
-                              builder: (BuildContext context,
-                                  void Function(void Function()) setState) {
-                                return SwitchListTile(
-                                  title: Text(
-                                    'Metrics',
-                                    style: GoogleFonts.getFont(
-                                      "Lato",
-                                      color: Colors.white70,
-                                      fontSize: 24,
-                                      textStyle:
-                                          Theme.of(context).textTheme.bodyText1,
-                                    ),
-                                  ),
-                                  secondary: const Icon(
-                                    Icons.thermostat_rounded,
-                                    color: Colors.white60,
-                                    size: 26,
-                                  ),
-                                  subtitle: Text(
-                                    'Turn off for values in Fahrenheit',
-                                    style: GoogleFonts.getFont(
-                                      "Lato",
-                                      color: Colors.white54,
-                                      fontSize: 12,
-                                      textStyle:
-                                          Theme.of(context).textTheme.subtitle1,
-                                    ),
-                                  ),
-                                  value: _celcius,
-                                  onChanged: (isOn) {
-                                    if (kDebugMode) {
-                                      print("switch value is $isOn");
-                                    }
-                                    setState(() {
-                                      _celcius = isOn;
-                                      print("celcius $_celcius");
-                                    });
-                                    if (_celcius) {
-                                      query['units'] = "metric";
-                                      print(query);
-                                    } else {
-                                      query['units'] = "imperial";
-                                      print(query);
-                                    }
-                                  },
-                                );
-                              },
-                            )
+                            // TODO: make a stateful switchbar
+                            // SwitchTile(switchValue: _celcius, valueChanged: valueChanged)
                           ],
                         ),
                       )),
@@ -155,9 +108,7 @@ class _LandingState extends State<Landing> {
     if (searchField.text.isEmpty) {
       report = _getData();
     } else {
-      setState(() {
-        report = data.callApi(context, searchterm: searchField.text);
-      });
+      report = data.callApi(context, searchterm: searchField.text);
     }
   }
 
@@ -224,13 +175,23 @@ class _LandingState extends State<Landing> {
                           controller: searchField,
                           textAlign: TextAlign.center,
                           maxLines: 1,
+                          textInputAction: TextInputAction.search,
+                          onFieldSubmitted: (value) {
+                            if (searchField.text.isNotEmpty) {
+                              setState(() {
+                                report = data.callApi(context,
+                                    searchterm: searchField.text);
+                              });
+                            }
+                            ;
+                          },
                           autocorrect: true,
-                          style: GoogleFonts.getFont('Lato',
-                              textStyle: Theme.of(context).textTheme.headline6,
+                          style: GoogleFonts.lato(
+                              textStyle: Theme.of(context).textTheme.headline5,
                               // fontSize: 18,
                               color: Colors.white70),
                           decoration: const InputDecoration(
-                              hintText: "New Delhi, India",
+                              hintText: "Search",
                               hintStyle: TextStyle(color: Colors.white30),
                               border: InputBorder.none),
                         ),
@@ -245,13 +206,12 @@ class _LandingState extends State<Landing> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8),
                         onPressed: () {
-                          // query['q'] = searchField.text;
-                          print("calling func");
-                            // data.callApi(searchterm: searchField.text);
-                          setState(() {
-                            data.callApi(context, searchterm: searchField.text);
-                          });  
-                          report;
+                          if (searchField.text.isNotEmpty) {
+                            setState(() {
+                              report = data.callApi(context,
+                                  searchterm: searchField.text);
+                            });
+                          }
                           print("done");
                         },
                       )
@@ -276,14 +236,14 @@ class _LandingState extends State<Landing> {
                     RichText(
                       text: TextSpan(
                         text: "${theData.data?.feels_like.round()}",
-                        style: GoogleFonts.getFont('Lato',
+                        style: GoogleFonts.lato(
                             textStyle: Theme.of(context).textTheme.headline1,
                             color: Colors.white.withOpacity(.7),
                             fontWeight: FontWeight.w800),
                         children: [
                           TextSpan(
                             text: '\u00B0',
-                            style: GoogleFonts.getFont('Lato',
+                            style: GoogleFonts.lato(
                                 textStyle:
                                     Theme.of(context).textTheme.headline1,
                                 color: Colors.white.withOpacity(.7),
@@ -295,8 +255,7 @@ class _LandingState extends State<Landing> {
                           query["units"] == 'metric'
                               ? TextSpan(
                                   text: 'C',
-                                  style: GoogleFonts.getFont(
-                                    'Lato',
+                                  style: GoogleFonts.lato(
                                     textStyle:
                                         Theme.of(context).textTheme.headline1,
                                     color: Colors.white.withOpacity(.7),
@@ -306,8 +265,7 @@ class _LandingState extends State<Landing> {
                               : query["units"] == "imperial"
                                   ? TextSpan(
                                       text: "F",
-                                      style: GoogleFonts.getFont(
-                                        'Lato',
+                                      style: GoogleFonts.lato(
                                         textStyle: Theme.of(context)
                                             .textTheme
                                             .headline1,
@@ -317,8 +275,7 @@ class _LandingState extends State<Landing> {
                                     )
                                   : TextSpan(
                                       text: "K",
-                                      style: GoogleFonts.getFont(
-                                        'Lato',
+                                      style: GoogleFonts.lato(
                                         textStyle: Theme.of(context)
                                             .textTheme
                                             .headline1,
@@ -329,6 +286,150 @@ class _LandingState extends State<Landing> {
                         ],
                       ),
                     ),
+                    Container(
+                      height: 35,
+                      width: MediaQuery.of(context).size.width * .25,
+                      color: Colors.transparent,
+                      child: BlurContainer(
+                        myParam: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Text(
+                              "${theData.data?.place}",
+                              style: GoogleFonts.lato(
+                                textStyle:
+                                    Theme.of(context).textTheme.headline6,
+                                fontSize: 16,
+                                color: Colors.white.withOpacity(.7),
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            Icon(
+                              Icons.place_outlined,
+                              color: Colors.white.withOpacity(.6),
+                              size: 18,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // used for testing of forcast data, remove once done....
+                    // ElevatedButton(
+                    //     onPressed: () {
+                    //       getdates();
+                    //       print("\n\n************** end *********************");
+                    //     }, child: Text("get a date"))
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * .25,
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * .37,
+                      child: ListView(
+                        shrinkWrap: true,
+                          children: <Widget>[
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 7, left: 15, right: 3, bottom: 7),
+                                  child: Container(
+                                    height: 100,
+                                    width: MediaQuery.of(context).size.width * .45,
+                                    child: BlurContainer(
+                                      myParam: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.local_fire_department,
+                                                color: Colors.white.withOpacity(.8),
+                                                size: 28,
+                                              ),
+                                              // const SizedBox(width: 10,),
+                                              Text("Max Temp",
+                                                style: GoogleFonts.lato(
+                                                  textStyle: Theme.of(context).textTheme.headline5,
+                                                  color: Colors.white70,
+                                                  fontWeight: FontWeight.w400,
+                                                ),)
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text("${theData.data?.max.toInt().toString()}\u00B0",
+                                            style: GoogleFonts.lato(
+                                              textStyle: Theme.of(context).textTheme.headline4,
+                                              color: Colors.white70,
+                                              fontWeight: FontWeight.w600,
+                                            ),)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 7, left: 3, right: 15, bottom: 7),
+                                  child: Container(
+                                    height: 100,
+                                    width: MediaQuery.of(context).size.width * .45,
+                                    child: BlurContainer(
+                                      myParam: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.ac_unit,
+                                                color: Colors.white.withOpacity(.8),
+                                                size: 28,
+                                              ),
+                                              // const SizedBox(width: 10,),
+                                              Text("Min Temp",
+                                                style: GoogleFonts.lato(
+                                                  textStyle: Theme.of(context).textTheme.headline5,
+                                                  color: Colors.white70,
+                                                  fontWeight: FontWeight.w400,
+                                                ),)
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text("${theData.data?.min.toInt().toString()}\u00B0",
+                                            style: GoogleFonts.lato(
+                                              textStyle: Theme.of(context).textTheme.headline4,
+                                              color: Colors.white70,
+                                              fontWeight: FontWeight.w600,
+                                            ),)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                )
+
+                              ],
+                            ),
+                            WeatherList(
+                                icons: Icons.description_rounded,
+                                header: "Description",
+                                values:
+                                "${theData.data?.description}"),
+                            WeatherList(
+                                icons: Icons.local_fire_department,
+                                header: "Max Temperature",
+                                values:
+                                    "${theData.data?.max.toInt().round().toString()}\u00B0"),
+                            WeatherList(
+                                icons: Icons.ac_unit,
+                                header: "Min Temperature",
+                                values:
+                                "${theData.data?.min.toInt().round().toString()}\u00B0")
+
+                          ],
+                      ),
+                    )
                   ],
                 );
               } else if (theData.hasError) {
@@ -357,12 +458,10 @@ class _LandingState extends State<Landing> {
                             ),
                           ),
                           child: Text(
-                              "Error while starting the app \n${theData.error}",
-                            style:GoogleFonts.getFont(
-                              'Lato',
-                              textStyle: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium,
+                            "Error while starting the app \n${theData.error}",
+                            style: GoogleFonts.lato(
+                              textStyle:
+                                  Theme.of(context).textTheme.titleMedium,
                               color: Colors.white.withOpacity(.7),
                               fontWeight: FontWeight.w400,
                             ),

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:weather/landing.dart';
@@ -28,43 +27,22 @@ class _MyAppState extends State<MyApp> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage("assets/images/cloudy.jpg"),
-                fit: BoxFit.cover),
+        body: GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage("assets/images/cloudy.jpg"),
+                  fit: BoxFit.cover),
+            ),
+            child: const Landing(),
           ),
-          child: Landing(),
         ),
       ),
     );
   }
 }
-
-// String apiKey = 'e00915bd6553ef76ab54a9a666f822fe';
-//
-// final query = {
-//   "q": 'New Delhi, India',
-//   "appid": apiKey,
-//   "units": 'metric' // imperial for F and metric for Calcius
-// };
-//
-// Future<dynamic> callApi() async {
-//   final link = Uri.https('api.openweathermap.org', '/data/2.5/weather',
-//       query); //?q=delhi&appid=${APIkey}';
-//   var request = await http.get(link);
-//   if (request.statusCode == 200) {
-//     var data = jsonDecode(request.body);
-//     if (kDebugMode) {
-//       print(data);
-//     }
-//     return data;
-//   } else {
-//     if (kDebugMode) {
-//       print(
-//           'something is wrong code===${request.statusCode} \nbody=== ${request.body}');
-//     }
-//   }
-// }

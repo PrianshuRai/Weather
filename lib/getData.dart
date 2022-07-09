@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 String apiKey = 'e00915bd6553ef76ab54a9a666f822fe';
@@ -41,7 +42,15 @@ class WeatherAPI {
         print(
             'something is wrong code===${request.statusCode} \nbody=== ${request.body}');
       }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Error occured"),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+        ),
+      );
       throw Exception("Failed to load data to the class");
+      // return ;
     }
   }
 }
@@ -59,6 +68,8 @@ class WeatherData {
   final int visibility;
   final double windSpeed;
   final int windDirection;
+  final double gust;
+  final String country;
 
   const WeatherData(
       {required this.feels_like,
@@ -72,10 +83,12 @@ class WeatherData {
       required this.humidity,
       required this.visibility,
       required this.windSpeed,
-      required this.windDirection});
+      required this.windDirection,
+      required this.gust,
+      required this.country});
 
   factory WeatherData.fromJson(Map<String, dynamic> json) => WeatherData(
-      feels_like: json['main']['temp_min'],
+      feels_like: json['main']['feels_like'],
       place: json['name'],
       main: json['weather'][0]['main'],
       description: json['weather'][0]['description'],
@@ -86,5 +99,7 @@ class WeatherData {
       humidity: json['main']['humidity'],
       visibility: json['visibility'],
       windSpeed: json['wind']['speed'],
-      windDirection: json['wind']['deg']);
+      windDirection: json['wind']['deg'],
+      gust: json['wind']['gust'],
+      country: json['sys']['country']);
 }
