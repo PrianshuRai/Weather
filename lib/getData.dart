@@ -13,7 +13,6 @@ final query = {
   "appid": apiKey,
   "units": 'metric' // imperial for F and metric for Calcius
 };
-// TODO: handle units checkbox properly
 
 class WeatherAPI {
   Future<WeatherData> callApi(context,
@@ -68,7 +67,6 @@ class WeatherData {
   final int visibility;
   final double windSpeed;
   final int windDirection;
-  final double gust;
   final String country;
 
   const WeatherData(
@@ -84,7 +82,6 @@ class WeatherData {
       required this.visibility,
       required this.windSpeed,
       required this.windDirection,
-      required this.gust,
       required this.country});
 
   factory WeatherData.fromJson(Map<String, dynamic> json) => WeatherData(
@@ -100,6 +97,5 @@ class WeatherData {
       visibility: json['visibility'],
       windSpeed: json['wind']['speed'],
       windDirection: json['wind']['deg'],
-      gust: json['wind']['gust'],
       country: json['sys']['country']);
 }

@@ -325,109 +325,247 @@ class _LandingState extends State<Landing> {
                     ),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * .37,
+                      width: MediaQuery.of(context).size.width * 95,
                       child: ListView(
                         shrinkWrap: true,
-                          children: <Widget>[
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 7, left: 15, right: 3, bottom: 7),
-                                  child: Container(
-                                    height: 100,
-                                    width: MediaQuery.of(context).size.width * .45,
-                                    child: BlurContainer(
-                                      myParam: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Icon(Icons.local_fire_department,
-                                                color: Colors.white.withOpacity(.8),
-                                                size: 28,
+                        children: <Widget>[
+                          Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 7, left: 15, right: 3, bottom: 7),
+                                child: Container(
+                                  height: 100,
+                                  width:
+                                      MediaQuery.of(context).size.width * .45,
+                                  child: BlurContainer(
+                                    myParam: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.local_fire_department,
+                                              color:
+                                                  Colors.white.withOpacity(.8),
+                                              size: 28,
+                                            ),
+                                            // const SizedBox(width: 10,),
+                                            Text(
+                                              "Max Temp",
+                                              style: GoogleFonts.lato(
+                                                textStyle: Theme.of(context)
+                                                    .textTheme
+                                                    .headline6,
+                                                color: Colors.white70,
+                                                fontWeight: FontWeight.w400,
                                               ),
-                                              // const SizedBox(width: 10,),
-                                              Text("Max Temp",
-                                                style: GoogleFonts.lato(
-                                                  textStyle: Theme.of(context).textTheme.headline5,
-                                                  color: Colors.white70,
-                                                  fontWeight: FontWeight.w400,
-                                                ),)
-                                            ],
+                                            )
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          "${theData.data?.max}\u00B0",
+                                          style: GoogleFonts.lato(
+                                            textStyle: Theme.of(context)
+                                                .textTheme
+                                                .headline4,
+                                            color: Colors.white70,
+                                            fontWeight: FontWeight.w600,
                                           ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          Text("${theData.data?.max.toInt().toString()}\u00B0",
-                                            style: GoogleFonts.lato(
-                                              textStyle: Theme.of(context).textTheme.headline4,
-                                              color: Colors.white70,
-                                              fontWeight: FontWeight.w600,
-                                            ),)
-                                        ],
-                                      ),
+                                        )
+                                      ],
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 7, left: 3, right: 15, bottom: 7),
-                                  child: Container(
-                                    height: 100,
-                                    width: MediaQuery.of(context).size.width * .45,
-                                    child: BlurContainer(
-                                      myParam: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Icon(Icons.ac_unit,
-                                                color: Colors.white.withOpacity(.8),
-                                                size: 28,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 7, left: 3, right: 15, bottom: 7),
+                                child: Container(
+                                  height: 100,
+                                  width:
+                                      MediaQuery.of(context).size.width * .45,
+                                  child: BlurContainer(
+                                    myParam: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.ac_unit,
+                                              color:
+                                                  Colors.white.withOpacity(.8),
+                                              size: 28,
+                                            ),
+                                            // const SizedBox(width: 10,),
+                                            Text(
+                                              "Min Temp",
+                                              style: GoogleFonts.lato(
+                                                textStyle: Theme.of(context)
+                                                    .textTheme
+                                                    .headline6,
+                                                color: Colors.white70,
+                                                fontWeight: FontWeight.w400,
                                               ),
-                                              // const SizedBox(width: 10,),
-                                              Text("Min Temp",
-                                                style: GoogleFonts.lato(
-                                                  textStyle: Theme.of(context).textTheme.headline5,
-                                                  color: Colors.white70,
-                                                  fontWeight: FontWeight.w400,
-                                                ),)
-                                            ],
+                                            )
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          "${theData.data?.min}\u00B0",
+                                          style: GoogleFonts.lato(
+                                            textStyle: Theme.of(context)
+                                                .textTheme
+                                                .headline4,
+                                            color: Colors.white70,
+                                            fontWeight: FontWeight.w600,
                                           ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          Text("${theData.data?.min.toInt().toString()}\u00B0",
-                                            style: GoogleFonts.lato(
-                                              textStyle: Theme.of(context).textTheme.headline4,
-                                              color: Colors.white70,
-                                              fontWeight: FontWeight.w600,
-                                            ),)
-                                        ],
-                                      ),
+                                        )
+                                      ],
                                     ),
                                   ),
-                                )
-
-                              ],
-                            ),
-                            WeatherList(
-                                icons: Icons.description_rounded,
-                                header: "Description",
-                                values:
-                                "${theData.data?.description}"),
-                            WeatherList(
-                                icons: Icons.local_fire_department,
-                                header: "Max Temperature",
-                                values:
-                                    "${theData.data?.max.toInt().round().toString()}\u00B0"),
-                            WeatherList(
-                                icons: Icons.ac_unit,
-                                header: "Min Temperature",
-                                values:
-                                "${theData.data?.min.toInt().round().toString()}\u00B0")
-
-                          ],
+                                ),
+                              )
+                            ],
+                          ),
+                          WeatherList(
+                              icons: Icons.description_rounded,
+                              header: "Description",
+                              values: "${theData.data?.description}"),
+                          WeatherList(
+                              icons: Icons.waves,
+                              header: "Humidity",
+                              values: "${theData.data?.humidity} %"),
+                          WeatherList(
+                              icons: Icons.compress_rounded,
+                              header: "Pressure",
+                              values: "${theData.data?.pressure} hPa"),
+                          Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 7, left: 15, right: 3, bottom: 7),
+                                child: Container(
+                                  height: 100,
+                                  width:
+                                      MediaQuery.of(context).size.width * .45,
+                                  child: BlurContainer(
+                                    myParam: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.air_rounded,
+                                              color:
+                                                  Colors.white.withOpacity(.8),
+                                              size: 28,
+                                            ),
+                                            // const SizedBox(width: 10,),
+                                            Text(
+                                              "Wind Speed",
+                                              style: GoogleFonts.lato(
+                                                textStyle: Theme.of(context)
+                                                    .textTheme
+                                                    .headline5,
+                                                color: Colors.white70,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          "${theData.data?.windSpeed}",
+                                          style: GoogleFonts.lato(
+                                            textStyle: Theme.of(context)
+                                                .textTheme
+                                                .headline4,
+                                            color: Colors.white70,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 7, left: 3, right: 15, bottom: 7),
+                                child: Container(
+                                  height: 100,
+                                  width:
+                                      MediaQuery.of(context).size.width * .45,
+                                  child: BlurContainer(
+                                    myParam: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.wind_power_rounded,
+                                              color:
+                                                  Colors.white.withOpacity(.8),
+                                              size: 28,
+                                            ),
+                                            // const SizedBox(width: 10,),
+                                            Text(
+                                              "Wind Direction",
+                                              style: GoogleFonts.lato(
+                                                textStyle: Theme.of(context)
+                                                    .textTheme
+                                                    .headline5,
+                                                color: Colors.white70,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          "${theData.data?.windDirection}\u00B0 ",
+                                          style: GoogleFonts.lato(
+                                            textStyle: Theme.of(context)
+                                                .textTheme
+                                                .headline4,
+                                            color: Colors.white70,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          WeatherList(
+                              icons: Icons.visibility_rounded,
+                              header: "Visibility",
+                              values: "${theData.data?.visibility} m"),
+                        ],
                       ),
                     )
                   ],
@@ -439,33 +577,16 @@ class _LandingState extends State<Landing> {
                   height: 350,
                   width: MediaQuery.of(context).size.width * .93,
                   color: Colors.transparent,
-                  child: ClipRRect(
-                    clipBehavior: Clip.antiAlias,
-                    borderRadius: BorderRadius.circular(22),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-                      child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            gradient: LinearGradient(
-                              colors: <Color>[
-                                Colors.black26.withOpacity(0.5),
-                                Colors.black26.withOpacity(0.5)
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                          ),
-                          child: Text(
-                            "Error while starting the app \n${theData.error}",
-                            style: GoogleFonts.lato(
-                              textStyle:
-                                  Theme.of(context).textTheme.titleMedium,
-                              color: Colors.white.withOpacity(.7),
-                              fontWeight: FontWeight.w400,
-                            ),
-                          )),
+                  child: BlurContainer(
+                    myParam: Center(
+                      child: Text(
+                        "Oops! 😵 \n${theData.error}",
+                        style: GoogleFonts.lato(
+                          textStyle: Theme.of(context).textTheme.headline4,
+                          color: Colors.white70,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
                 ));
