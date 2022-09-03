@@ -1,7 +1,7 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:weather/landing.dart';
@@ -28,7 +28,6 @@ class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -45,11 +44,9 @@ class _MyAppState extends State<MyApp> {
 }
 
 String apiKey = 'e00915bd6553ef76ab54a9a666f822fe';
-String place = '';
+
 final query = {
-  "lat": '',
-  "lon": '',
-  "q": '',
+  "q": 'New Delhi, India',
   "appid": apiKey,
   "units": 'metric' // imperial for F and metric for Calcius
 };

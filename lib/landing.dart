@@ -1,14 +1,19 @@
-import 'dart:convert';
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
-import 'package:js/js.dart';
 import 'package:weather/main.dart';
 
-import 'locationJS.dart';
+
+TextStyle getFont(TextStyle? values, BuildContext context,
+    {color: Colors, size: Size}) {
+  return GoogleFonts.getFont(
+    "Lato",
+    textStyle: Theme.of(context).textTheme.bodyText1,
+  );
+}
+//TODO functio for TextStyle
 
 class Landing extends StatefulWidget {
   const Landing({Key? key}) : super(key: key);
@@ -19,47 +24,13 @@ class Landing extends StatefulWidget {
 
 class _LandingState extends State<Landing> {
   TextEditingController searchField = TextEditingController();
-  var _latitude;
-  var _longitude;
   bool menuOpen = false;
-
-  Future getLoc() async {
-    var req = await http.get(Uri.parse('https://geolocation-db.com/json/'));
-    Map<String, dynamic> data = jsonDecode(req.body);
-    print("data = $data");
-  }
-
-  success(pos) async {
-    try {
-      // mypos = [pos.coords.latitude, pos.coords.longitude];
-      _latitude = pos.coords.latitude;
-      _longitude = pos.coords.longitude;
-    } catch (ex) {
-      print("Exception thrown : " + ex.toString());
-    }
-    setState(() {
-      query['lat'] = _latitude;
-      query['lon'] = _longitude;
-    });
-    var data = callApi();
-    print("your data is here: $data");
-  }
-
-  Future<void> loc() async {
-    if (kIsWeb) {
-      getCurrentPosition(allowInterop((pos) => success(pos)));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    loc();
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        const SizedBox(
-          height: 25,
-        ),
         Padding(
           padding: const EdgeInsets.all(20.0),
           child: Container(
@@ -135,7 +106,7 @@ class _LandingState extends State<Landing> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8),
                         onPressed: () {
-                          place = searchField.text;
+                          query['q'] = searchField.text;
                           callApi();
                         },
                       )
@@ -199,55 +170,14 @@ class _LandingState extends State<Landing> {
             ],
           ),
         ),
+        ElevatedButton(
+            onPressed: () async {
+              Position position = await Geolocator.getCurrentPosition(
+                  desiredAccuracy: LocationAccuracy.high);
+              print(position);
+            },
+            child: Text('get position'))
       ],
     );
   }
 }
-
-// _getCurrentLocation() {
-//   if (kIsWeb) {
-//     getCurrentPosition(allowInterop((pos) => success(pos)));
-//   }
-// }
-
-// Future<Object?> _getLocation() async {
-//   bool serviceEnabled;
-//   LocationPermission permission;
-//   await Permission.location.request();
-//
-//   if (await Permission.locationWhenInUse.serviceStatus.isEnabled) {
-//     try {
-//       Position currentPosition = await Geolocator.getCurrentPosition(
-//           desiredAccuracy: LocationAccuracy.high);
-//       if (kDebugMode) {
-//         print("current location: $currentPosition");
-//       }
-//       return currentPosition;
-//     } on Exception {
-//       Position? lastPosition = await Geolocator.getLastKnownPosition();
-//       print('last position: $lastPosition');
-//       return lastPosition;
-//     }
-//   }
-//
-//   // check for the location
-//   permission = await Geolocator.checkPermission();
-//   // // if the permission is denied by the user
-//   // // earlier, then ask for the permission again
-//   // if (permission == LocationPermission.denied) {
-//   //   // show dialog for location permission
-//   //   permission = await Geolocator.requestPermission();
-//   //   // if location permission is denied again intentionally
-//   //   // maybe user doesn't want to use the app.
-//   //   if (permission == LocationPermission.denied) {
-//   //     return Future.error('Location permissions are denied');
-//   //   }
-//   // }
-//   // if (permission == LocationPermission.deniedForever) {
-//   //   // Permissions are denied forever, handle appropriately.
-//   //   // the user is a rude person
-//   //   return Future.error(
-//   //       'Location permissions are permanently denied, we cannot request permissions.');
-//   // }
-// }
-// }
